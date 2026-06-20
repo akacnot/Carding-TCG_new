@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardin TCG 会員証</title>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+<style>
+body{
+    background:#f4f4f4;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:20px;
+}
+
+.card{
+    max-width:400px;
+    margin:auto;
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+h1{
+    color:#0066cc;
+}
+
+img{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    margin:10px;
+}
+
+.info{
+    font-size:20px;
+    margin:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Cardin TCG</h1>
+
+    <img id="icon" src="">
+
+    <div class="info" id="name">読み込み中...</div>
+
+    <div class="info">
+        会員番号：000001
+    </div>
+
+    <div class="info">
+        ポイント：100P
+    </div>
+</div>
+
+<script>
+async function main(){
+
+    await liff.init({
+        liffId: "2010457116-yVCDEr78"
+    });
+
+    if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+    }
+
+    const profile = await liff.getProfile();
+
+    document.getElementById("name").innerText =
+        profile.displayName;
+
+    document.getElementById("icon").src =
+        profile.pictureUrl;
+}
+
+main();
+</script>
+
+</body>
+</html>
