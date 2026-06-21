@@ -9,6 +9,8 @@
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
 body{
     background:#f4f4f4;
@@ -45,8 +47,8 @@ h1{
 
 #qr{
     margin-top:20px;
-    width:200px;
-    height:200px;
+    display:flex;
+    justify-content:center;
 }
 </style>
 
@@ -74,7 +76,7 @@ h1{
 <span id="point">0</span>P
 </div>
 
-<img id="qr" src="">
+<div id="qr"></div>
 
 </div>
 
@@ -116,9 +118,16 @@ async function main(){
     document.getElementById("point").innerText =
         data.point;
 
-    document.getElementById("qr").src =
-        "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-        encodeURIComponent(profile.userId);
+    document.getElementById("qr").innerHTML = "";
+
+    new QRCode(
+        document.getElementById("qr"),
+        {
+            text: profile.userId,
+            width: 200,
+            height: 200
+        }
+    );
 }
 
 main();
