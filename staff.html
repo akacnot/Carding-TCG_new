@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cardin TCG ポイント管理</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+  font-family:Arial,sans-serif;
+  text-align:center;
+  padding:20px;
+}
+
+#reader{
+  max-width:400px;
+  margin:auto;
+}
+
+.card{
+  max-width:400px;
+  margin:20px auto;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+
+button{
+  padding:12px 20px;
+  margin:5px;
+  font-size:18px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Cardin TCG 管理画面</h1>
+
+<div id="reader"></div>
+
+<div class="card" id="result">
+QRコードを読み取ってください
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzaIlXa6wJUvaZ-3zsPh7_mLNJlZ_8y7vpYtSVHuL-B8eFjR1YEZJmM7QupcGE_8H3g/exec";
+
+let currentUserId = "";
+
+function showUser(data){
+
+  currentUserId = data.userId;
+
+  document.getElementById("result").innerHTML = `
+    <h2>${data.name}</h2>
+    <p>会員番号：${data.memberNo}</p>
+    <p>ポイント：<span id="point">${data.point}</span>P</p>
+
+    <button onclick="addPoint(10)">+10P</button>
+    <button onclick="addPoint(50)">+50P</button>
+    <button onclick="addPoint(100)">+100P</button>
+  `;
+}
+
+async function addPoint(point){
+
+  const response = await fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      userId:currentUserId,
+      point:point
+    })
+  });
+
+  const data = await response.json();
+
+  if(data.success){
+    document.getElementById("point").innerText =
+      data.point;
+
+    alert(point + "ポイント加算しました");
+  }
+}
+
+function onScanSuccess(decodedText){
+
+  fetch(
+    API_URL +
+    "?action=find&userId=" +
+    encodeURIComponent(decodedText)
+  )
+  .then(r => r.json())
+  .then(showUser);
+
+}
+
+const scanner =
+  new Html5QrcodeScanner(
+    "reader",
+    {
+      fps:10,
+      qrbox:250
+    }
+  );
+
+scanner.render(onScanSuccess);
+
+</script>
+
+</body>
+</html>
