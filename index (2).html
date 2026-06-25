@@ -1,138 +1,50 @@
-<!DOCTYPE html>
-
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Cardin TCG 会員証</title>
-
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<style>
-body{
-    background:#f4f4f4;
-    font-family:Arial,sans-serif;
-    margin:0;
-    padding:20px;
-}
-
-.card{
-    max-width:400px;
-    margin:auto;
-    background:white;
-    border-radius:20px;
-    padding:20px;
-    text-align:center;
-    box-shadow:0 4px 10px rgba(0,0,0,0.2);
-}
-
-h1{
-    color:#0066cc;
-}
-
-#icon{
-    width:120px;
-    height:120px;
-    border-radius:50%;
-    margin:10px;
-}
-
-.info{
-    font-size:20px;
-    margin:10px;
-}
-
-#qr{
-    margin-top:20px;
-    display:flex;
-    justify-content:center;
-}
-</style>
-
-</head>
-
-<body>
-
-<div class="card">
-
-<h1>Cardin TCG</h1>
-
-<img id="icon" src="">
-
-<div class="info" id="name">
-読み込み中...
-</div>
-
-<div class="info">
-会員番号：
-<span id="memberNo">---</span>
-</div>
-
-<div class="info">
-ポイント：
-<span id="point">0</span>P
-</div>
-
-<div id="qr"></div>
-
-</div>
-
-<script>
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbzaIlXa6wJUvaZ-3zsPh7_mLNJlZ_8y7vpYtSVHuL-B8eFjR1YEZJmM7QupcGE_8H3g/exec";
-
 async function main(){
 
-    await liff.init({
-        liffId:"2010457116-yVCDEr78"
-    });
+try {
 
-    if(!liff.isLoggedIn()){
-        liff.login();
-        return;
-    }
+```
+await liff.init({
+  liffId:"2010457116-yVCDEr78"
+});
 
-    const profile = await liff.getProfile();
+if(!liff.isLoggedIn()){
+  liff.login();
+  return;
+}
 
-    document.getElementById("name").innerText =
-        profile.displayName;
+const profile = await liff.getProfile();
 
-    document.getElementById("icon").src =
-        profile.pictureUrl;
+document.getElementById("name").innerText =
+  profile.displayName;
 
-    const response = await fetch(
-        API_URL +
-        "?userId=" +
-        encodeURIComponent(profile.userId)
-    );
+if(profile.pictureUrl){
+  document.getElementById("icon").src =
+    profile.pictureUrl;
+}
 
-    const data = await response.json();
+const response = await fetch(
+  API_URL +
+  "?userId=" +
+  encodeURIComponent(profile.userId)
+);
 
-    document.getElementById("memberNo").innerText =
-        data.memberNo;
+const text = await response.text();
 
-    document.getElementById("point").innerText =
-        data.point;
+document.getElementById("memberNo").innerText =
+  text;
+```
 
-    document.getElementById("qr").innerHTML = "";
+} catch(err){
 
-    new QRCode(
-        document.getElementById("qr"),
-        {
-            text: profile.userId,
-            width: 200,
-            height: 200
-        }
-    );
+```
+document.getElementById("name").innerText =
+  "ERROR";
+
+document.getElementById("memberNo").innerText =
+  err.toString();
+```
+
+}
 }
 
 main();
-
-</script>
-
-</body>
-</html>
